@@ -1,0 +1,25 @@
+docker --version — check Docker client version.
+
+docker compose version — check compose plugin.
+
+docker images — list local images.
+
+docker ps — list running containers.
+
+docker ps -a — list all containers (running + stopped).
+
+docker logs -f <container> — stream container logs (great for Spring Boot startup logs).
+
+docker exec -it <container> /bin/sh or /bin/bash — open a shell inside container (if image has shell).
+
+docker inspect <container> — JSON metadata (useful for networking/port info).
+
+docker rm -f <container> — remove/force-stop container.
+
+docker rmi <image> — remove images.
+
+docker compose up --build — build and start all services in compose.
+
+docker compose logs -f app — stream logs for service named app in compose file.
+
+docker stats — runtime resource usage for containers.
