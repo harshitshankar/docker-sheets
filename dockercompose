@@ -1,0 +1,100 @@
+## Setup
+
+### 1. Start MySQL + Kafka via Docker Compose
+```bash
+docker-compose up -d
+2. Build and Run Locally
+bash
+Copy code
+mvn clean package
+java -jar target/usermgmt-0.0.1-SNAPSHOT.jar
+3. Test APIs via Postman
+Create User (POST)
+bash
+Copy code
+POST http://localhost:8080/api/users
+Body (JSON):
+{
+  "name": "Harshit",
+  "email": "harshit@example.com"
+}
+Get Users (GET)
+bash
+Copy code
+GET http://localhost:8080/api/users
+Expected Output:
+
+json
+Copy code
+[
+  {
+    "id": 1,
+    "name": "Harshit",
+    "email": "harshit@example.com"
+  }
+]
+4. Jenkins + Docker Pipeline
+Create Jenkins pipeline with Jenkinsfile.
+
+Configure DockerHub credentials in Jenkins (docker-hub-creds).
+
+Run pipeline:
+
+Builds Maven project
+
+Builds Docker image
+
+Pushes to DockerHub
+
+Runs container locally
+
+Notes / TODOs
+Change application.properties for production DB or Kafka.
+
+Add more fields to User entity for enterprise usage.
+
+Add PUT, DELETE endpoints for full CRUD.
+
+Enhance Kafka consumer to persist events or trigger workflows.
+
+sql
+Copy code
+
+---
+
+# **4. How to ZIP and Push to GitHub**
+
+1. Create folder `user-management`.
+2. Copy all files and folders above into it.
+3. Right-click → **Send to ZIP** → `user-management.zip`.
+4. Extract anywhere and run `mvn clean package` to test.
+5. Push to GitHub:
+
+```bash
+git init
+git add .
+git commit -m "Initial enterprise-ready Spring Boot project"
+git branch -M main
+git remote add origin https://github.com/yourusername/user-management.git
+git push -u origin main
+5. Expected Output After Docker Up
+Run:
+
+bash
+Copy code
+docker-compose up -d
+docker build -t usermgmt-app .
+docker run -d -p 8080:8080 usermgmt-app
+Open Postman:
+
+POST /api/users → create a user
+
+GET /api/users → see list of users
+
+Terminal logs inside Docker container:
+
+sql
+Copy code
+Consumed message: User created: 1
+Shows Kafka consumer consuming events asynchronously.
+
