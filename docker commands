@@ -24,6 +24,24 @@ docker compose logs -f app — stream logs for service named app in compose file
 
 docker stats — runtime resource usage for containers.
 
+docker ps
+This shows container IDs and names.
+
+Access the container’s shell:
+
+bash
+docker exec -it <container_id_or_name> sh
+or, if the container uses bash:
+
+bash
+docker exec -it <container_id_or_name> bash
+Navigate inside the container: Once inside, use Linux commands like:
+
+bash
+ls
+cd /app  # or wherever you copied files
+cat filename.txt
+
 
 
 Today
