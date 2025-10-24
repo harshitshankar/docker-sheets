@@ -1,0 +1,182 @@
+Step 0: Prerequisites Check
+
+Make sure you have installed:
+
+Java JDK 17+ → java -version
+
+Maven → mvn -version
+
+Docker Desktop → running and with Linux containers enabled
+
+Git → git --version
+
+Jenkins → installed and running on http://localhost:8080
+
+✅ All good? Then continue.
+
+Step 1: Connect GitHub repo to Jenkins
+
+Open Jenkins → New Item → Pipeline → name it user-management-pipeline.
+
+Choose Pipeline → OK.
+
+Scroll to Pipeline Section → Definition → Pipeline script from SCM.
+
+Choose Git, and in Repository URL, put your GitHub repo URL:
+
+https://github.com/yourusername/user-management.git
+
+
+Credentials → If your repo is private, add Git credentials.
+
+Branch → main (or your default branch).
+
+✅ Now Jenkins knows where to get your code.
+
+Step 2: Handle sh vs Windows in Jenkins
+
+On Windows, Jenkins cannot directly run sh commands.
+
+Options:
+
+Option A: Use Git Bash or Windows Subsystem for Linux (WSL)
+
+Install Git Bash
+ → make sure Jenkins runs builds using Git Bash.
+
+Or install WSL Ubuntu and configure Jenkins to run pipeline commands there.
+
+Option B: Convert sh commands to bat commands for Windows:
+
+bat 'mvn clean package -DskipTests'
+bat 'docker build -t %DOCKER_IMAGE% .'
+bat 'docker run -d -p 8080:8080 %DOCKER_IMAGE%'
+
+
+For Windows beginners, I recommend Option A (Git Bash) because it’s closest to Linux and works with Docker commands.
+
+Step 3: Configure Docker in Jenkins
+
+Docker Desktop must be running.
+
+Jenkins must have permission to run Docker. On Windows:
+
+Make sure Jenkins runs as a user that has Docker access.
+
+Or run Jenkins as Administrator.
+
+Test in Jenkins Execute Shell:
+
+docker --version
+
+
+If it prints Docker version → ✅ Docker works in Jenkins.
+
+Step 4: Create DockerHub credentials in Jenkins
+
+Go to Jenkins → Manage Jenkins → Credentials → Global → Add Credentials.
+
+Kind → Username with password
+
+Username → DockerHub username
+
+Password → DockerHub password
+
+ID → docker-hub-creds (this ID is used in Jenkinsfile)
+
+Step 5: Use the Jenkinsfile from GitHub
+
+Since your repo already has Jenkinsfile, Jenkins will automatically use it.
+
+Pipeline Stages:
+
+Checkout code from GitHub
+
+Build Maven project (mvn clean package)
+
+Docker login (uses DockerHub credentials)
+
+Build Docker image
+
+Push Docker image to DockerHub
+
+Run Docker container locally
+
+Step 6: Run Docker Compose (Optional for DB + Kafka)
+
+Before the pipeline, you can run:
+
+docker-compose up -d
+
+
+This starts MySQL + Kafka + Zookeeper
+
+Keep these running so your Spring Boot app can connect
+
+Step 7: Run the Jenkins Pipeline
+
+Go to Jenkins → user-management-pipeline → Build Now
+
+Watch console output:
+
+Maven Build → target JAR created
+
+Docker Build → image built
+
+Docker Push → pushed to DockerHub
+
+Docker Run → container started on port 8080
+
+Step 8: Test the App
+
+Open Postman or browser.
+
+API URLs:
+
+Create User (POST)
+
+http://localhost:8080/api/users
+Body JSON:
+{
+  "name": "Harshit",
+  "email": "harshit@example.com"
+}
+
+
+Get Users (GET)
+
+http://localhost:8080/api/users
+
+
+Expected outputs:
+
+GET request returns JSON array of users
+
+Console logs show:
+
+Consumed message: User created: 1
+
+
+(Kafka consumer working)
+
+Step 9: Notes & Tweaks
+
+If running on Windows, replace sh with bat in Jenkinsfile OR run Jenkins with Git Bash/WSL.
+
+Change application.properties if MySQL/Kafka run on different ports.
+
+Docker container runs on 8080 → you can change in Dockerfile if needed.
+
+✅ Summary Flow (Execution)
+
+Start Docker Desktop
+
+Run docker-compose up -d → MySQL + Kafka + Zookeeper
+
+Jenkins pulls code from GitHub
+
+Jenkins pipeline builds project, Docker image, pushes, runs container
+
+Access API at http://localhost:8080/api/users
+
+Kafka consumer logs messages in console
